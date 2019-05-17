@@ -1,13 +1,13 @@
 FROM ubuntu:18.04
 
-# largely based on https://github.com/rocker-org/rocker-versioned/blob/master/r-ver/3.5.3/Dockerfile
+# largely based on https://github.com/rocker-org/rocker-versioned/blob/master/r-ver/Dockerfile
 
 LABEL org.label-schema.license="GPL-2.0" \
       org.label-schema.vcs-url="https://github.com/openanalytics/r-ver" \
       maintainer="Tobias Verbeke <tobias.verbeke@openanalytics.eu>"
 
 ARG R_VERSION
-ENV R_VERSION=${R_VERSION:-3.5.3} \
+ENV R_VERSION=${R_VERSION:-3.6.0} \
     LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     TERM=xterm
