@@ -3,7 +3,7 @@ pipeline {
     agent any
     
     parameters {
-        choice(name: 'R_VERSION', choices: ['3.5.3', '3.6.0'], description: 'Build r-ver image for this R version')
+        choice(name: 'R_VERSION', choices: ['3.5.3', '3.6.0', '3.3.3'], description: 'Build r-ver image for this R version')
         booleanParam(name: 'NOCACHE', defaultValue: false, description: 'Run docker build with --no-cache')
     }
 
