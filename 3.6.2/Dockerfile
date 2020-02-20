@@ -7,7 +7,7 @@ LABEL org.label-schema.license="GPL-2.0" \
       maintainer="Tobias Verbeke <tobias.verbeke@openanalytics.eu>"
 
 ARG R_VERSION
-ENV R_VERSION=${R_VERSION:-3.6.1} \
+ENV R_VERSION=${R_VERSION:-3.6.2} \
     LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     TERM=xterm
