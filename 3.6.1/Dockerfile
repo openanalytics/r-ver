@@ -38,6 +38,7 @@ RUN apt-get update \
     liblzma5 \
     locales \
     make \
+    netbase \
     unzip \
     zip \
     zlib1g \
