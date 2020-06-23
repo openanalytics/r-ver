@@ -58,7 +58,7 @@ pipeline {
             steps {
             
                 withDockerRegistry([
-                        credentialsId: "52b706f7-b775-4fcc-83c2-3f51853250e5",
+                        credentialsId: "openanalytics-dockerhub",
                         url: ""]) {
                         
                     sh "docker push ${env.NS}/r-ver:${params.R_VERSION}"
@@ -78,7 +78,7 @@ pipeline {
             steps {
             
                 withDockerRegistry([
-                        credentialsId: "52b706f7-b775-4fcc-83c2-3f51853250e5",
+                        credentialsId: "openanalytics-dockerhub",
                         url: ""]) {
                         
                     sh "docker tag ${env.NS}/r-ver:${params.R_VERSION} ${env.NS}/r-ver:latest"
