@@ -1,7 +1,21 @@
 pipeline {
-    
-    agent any
-    
+
+    agent {
+        kubernetes {
+            yaml '''
+              apiVersion: v1
+              kind: Pod
+              spec:
+                containers:
+                - name: dind
+                  image: 196229073436.dkr.ecr.eu-west-1.amazonaws.com/oa-infrastructure/dind
+                  securityContext:
+                    privileged: true
+            '''
+            defaultContainer 'dind'
+        }
+    }
+
     parameters {
         choice(name: 'R_VERSION', choices: ['3.6.2', '3.6.1', '3.6.0', '3.5.3', '3.3.3'], description: 'Build r-ver image for this R version')
         booleanParam(name: 'NOCACHE', defaultValue: false, description: 'Run docker build with --no-cache')
