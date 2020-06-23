@@ -45,7 +45,7 @@ pipeline {
                     script {
                          def image = docker.build(
                             "${env.NS}/r-ver:${params.R_VERSION}",
-                            ("${params.NOCACHE}".toBoolean() ? '--no-cache ' : '') + "--build-arg http_proxy='http://webproxy.openanalytics.eu:8080' --build-arg https_proxy='http://webproxy.openanalytics.eu:8080' --build-arg no_proxy='localhost,127.0.0.0,127.0.0.1,openanalytics.eu' .")
+                            ("${params.NOCACHE}".toBoolean() ? '--no-cache ' : '') + " .")
                     }
                 }
             
