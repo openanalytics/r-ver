@@ -70,8 +70,8 @@ pipeline {
                     sh """
                     docker tag ${env.NS}/r-ver:${params.R_VERSION} ${env.REG_OA_PRIVATE}/${env.NS}/r-ver:${params.R_VERSION}
                     """
-                    ecrPush "${env.REG_OA_PRIVATE}" "${env.NS}/r-ver", "${params.R_VERSION}", '', 'eu-west-1' 
                 }
+                ecrPush "${env.REG_OA_PRIVATE}" "${env.NS}/r-ver", "${params.R_VERSION}", '', 'eu-west-1' 
                 
             }
             
