@@ -86,16 +86,16 @@ pipeline {
                         credentialsId: "openanalytics-dockerhub",
                         url: ""]) {
                         
-                    sh "docker tag ${env.NS}/r-ver:${params.R_VERSION} ${env.NS}/r-ver:${env.TS}"
-                    sh "docker push ${env.NS}/r-ver:${env.TS}"
+                    sh "docker tag ${env.NS}/r-ver:${params.R_VERSION} ${env.NS}/r-ver:${params.R_VERSION}-${env.TS}"
+                    sh "docker push ${env.NS}/r-ver:${params.R_VERSION}-${env.TS}"
 
                 }
                 
                 withOARegistry {
                     sh """
-                    docker tag ${env.NS}/r-ver:${params.R_VERSION} ${env.REG_OA_PRIVATE}/${env.NS}/r-ver:${env.TS}
+                    docker tag ${env.NS}/r-ver:${params.R_VERSION} ${env.REG_OA_PRIVATE}/${env.NS}/r-ver:${params.R_VERSION}-${env.TS}
                     """
-                    ecrPush "${env.REG_OA_PRIVATE}", "${env.NS}/r-ver", "${env.TS}", '', 'eu-west-1' 
+                    ecrPush "${env.REG_OA_PRIVATE}", "${env.NS}/r-ver", "${params.R_VERSION}-${env.TS}", '', 'eu-west-1' 
                 }
                 
                 
