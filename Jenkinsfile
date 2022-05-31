@@ -33,7 +33,7 @@ pipeline {
     environment {
         NS = 'openanalytics'
         REG_OA_PRIVATE = '196229073436.dkr.ecr.eu-west-1.amazonaws.com'
-        TS = "${sh(returnStdout: true, script: 'date -u +%Y%m%d%H%M%S')}" 
+        TS = "${sh(returnStdout: true, script: 'date -u +%Y%m%d%H%M%S').trim()}" 
     }
     
     stages {
