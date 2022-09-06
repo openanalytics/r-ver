@@ -5,14 +5,28 @@ pipeline {
             yaml '''
               apiVersion: v1
               kind: Pod
+              metadata:
+                labels:
+                  docker: r-ver
               spec:
                 containers:
-                - name: dind
-                  image: 196229073436.dkr.ecr.eu-west-1.amazonaws.com/oa-infrastructure/dind
-                  securityContext:
-                    privileged: true
+                - name: kaniko
+                  image: gcr.io/kaniko-project/executor:v1.7.0-debug
+                  env:
+                  - name: AWS_SDK_LOAD_CONFIG
+                    value: "true"
+                  command:
+                  - /kaniko/docker-credential-ecr-login
+                  - get
+                  tty: true
+                  resources:
+                    requests:
+                        memory: "1024Mi"
+                    limits:
+                        memory: "2048Mi"
+                  imagePullPolicy: Always
             '''
-            defaultContainer 'dind'
+            defaultContainer 'kaniko'
         }
     }
 
@@ -33,105 +47,39 @@ pipeline {
     environment {
         NS = 'openanalytics'
         REG_OA_PRIVATE = '196229073436.dkr.ecr.eu-west-1.amazonaws.com'
-        TS = "${sh(returnStdout: true, script: 'date -u +%Y%m%d%H%M%S').trim()}" 
+        TS = sh(returnStdout: true, script: 'date -u +%Y%m%d%H%M%S').trim()
+        DOCKER_HUB_CREDS = credentials('openanalytics-dockerhub')
+        REGION = "eu-west-1"
     }
     
     stages {
     
-        stage('Docker Build') {
+        stage('Build') {
         
             steps {
                 
                 dir("${params.R_VERSION}"){
-            
-                    script {
-                         def image = docker.build(
-                            "${env.NS}/r-ver:${params.R_VERSION}",
-                            ("${params.NOCACHE}".toBoolean() ? '--no-cache ' : '') + " .")
-                    }
-                }
-            
-            }
-            
-        }
-        
-        stage('Docker Push') {
-        
-            steps {
-            
-                withDockerRegistry([
-                        credentialsId: "openanalytics-dockerhub",
-                        url: ""]) {
-                        
-                    sh "docker push ${env.NS}/r-ver:${params.R_VERSION}"
-
-                }
-
-                withOARegistry {
+                    
+                    sh '''
+                    set +x
+                    echo "{\\"auths\\": {\\"https://index.docker.io/v1/\\": {\\"auth\\": \\"\$(echo -n $DOCKER_HUB_CREDS | base64)\\"}}}" > /kaniko/.docker/config.json
+                    set -x
+                    '''
                     sh """
-                    docker tag ${env.NS}/r-ver:${params.R_VERSION} ${env.REG_OA_PRIVATE}/${env.NS}/r-ver:${params.R_VERSION}
+                    /kaniko/executor \
+                        -v info \
+                        --context ${env.WORKSPACE}/${params.R_VERSION} \
+                        --cache=${params.NOCACHE ? 'false' : 'true'} \
+                        --cleanup \
+                        --destination=${env.NS}/r-ver:${params.R_VERSION} \
+                        --destination=${env.REG_OA_PRIVATE}/${env.NS}/r-ver:${params.R_VERSION} \
+                        --destination=${env.NS}/r-ver:${params.R_VERSION}-${env.TS} \
+                        --destination=${env.REG_OA_PRIVATE}/${env.NS}/r-ver:${params.R_VERSION}-${env.TS} \
+                        ${params.LATEST ? "--destination=${env.NS}/r-ver:latest" : ""} \
+                        ${params.LATEST ? "--destination=${env.REG_OA_PRIVATE}/${env.NS}/r-ver:latest" : ""}
                     """
-                    ecrPush "${env.REG_OA_PRIVATE}", "${env.NS}/r-ver", "${params.R_VERSION}", '', 'eu-west-1' 
                 }
-                
-            }
-            
+            }       
         }
-
-        stage('Docker Tag with Timestamp') {
-            
-            steps {
-            
-                withDockerRegistry([
-                        credentialsId: "openanalytics-dockerhub",
-                        url: ""]) {
-                        
-                    sh "docker tag ${env.NS}/r-ver:${params.R_VERSION} ${env.NS}/r-ver:${params.R_VERSION}-${env.TS}"
-                    sh "docker push ${env.NS}/r-ver:${params.R_VERSION}-${env.TS}"
-
-                }
-                
-                withOARegistry {
-                    sh """
-                    docker tag ${env.NS}/r-ver:${params.R_VERSION} ${env.REG_OA_PRIVATE}/${env.NS}/r-ver:${params.R_VERSION}-${env.TS}
-                    """
-                    ecrPush "${env.REG_OA_PRIVATE}", "${env.NS}/r-ver", "${params.R_VERSION}-${env.TS}", '', 'eu-west-1' 
-                }
-                
-                
-            }
-            
-        }
-
-        stage('Docker Tag Latest') {
-            
-            when { 
-                expression { return params.LATEST }
-            }
-             
-            steps {
-            
-                withDockerRegistry([
-                        credentialsId: "openanalytics-dockerhub",
-                        url: ""]) {
-                        
-                    sh "docker tag ${env.NS}/r-ver:${params.R_VERSION} ${env.NS}/r-ver:latest"
-                    sh "docker push ${env.NS}/r-ver:latest"
-
-                }
-                
-                withOARegistry {
-                    sh """
-                    docker tag ${env.NS}/r-ver:${params.R_VERSION} ${env.REG_OA_PRIVATE}/${env.NS}/r-ver:latest
-                    """
-                    ecrPush "${env.REG_OA_PRIVATE}", "${env.NS}/r-ver", "latest", '', 'eu-west-1' 
-                }
-                
-                
-            }
-            
-        }
-     
     }
-    
 }
