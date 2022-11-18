@@ -12,9 +12,7 @@
 FROM rocker/r-ver:4.2.2
 ENV R_PAPERSIZE=a4
 ```
-- the build will automatically be triggered but not for the latest version (you can cancel it)
-- to trigger the right build (for the latest and greatest), launch the parametrized build for the
-  version of your choice on [Jenkins](https://ci.openanalytics.eu/job/git/job/r-ver/job/master/)
+- **Note:** the build will *not* be automatically triggered, so you need to manually launch the parametrized build for the version of your choice on [Jenkins](https://ci.openanalytics.eu/job/git/job/r-ver/job/master/)
 
 ## Rebuild an image
 
