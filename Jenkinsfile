@@ -55,7 +55,14 @@ pipeline {
     stages {
     
         stage('Build') {
-        
+            
+            // NB: do not run builds automatically, but only on user input
+            when { 
+                not {
+                    triggeredBy 'SCMTrigger'
+                }
+            }  
+               
             steps {
                 
                 dir("${params.R_VERSION}"){
