@@ -9,6 +9,12 @@ pipeline {
                 labels:
                   docker: r-ver
               spec:
+                imagePullSecrets:
+                - name: registry-robot
+                volumes:
+                - name: kaniko-dockerconfig
+                  secret:
+                    secretName: registry-robot
                 containers:
                 - name: kaniko
                   image: gcr.io/kaniko-project/executor:v1.7.0-debug
@@ -25,6 +31,10 @@ pipeline {
                     limits:
                         memory: "2048Mi"
                   imagePullPolicy: Always
+                  volumeMounts:
+                  - name: kaniko-dockerconfig
+                    mountPath: /kaniko/.docker/config.json
+                    subPath: .dockerconfigjson
             '''
             defaultContainer 'kaniko'
         }
@@ -46,9 +56,8 @@ pipeline {
     
     environment {
         NS = 'openanalytics'
-        REG_OA_PRIVATE = '196229073436.dkr.ecr.eu-west-1.amazonaws.com'
+        REG_OA_PRIVATE = 'registry.openanalytics.eu'
         TS = sh(returnStdout: true, script: 'date -u +%Y%m%d%H%M%S').trim()
-        DOCKER_HUB_CREDS = credentials('openanalytics-dockerhub')
         REGION = "eu-west-1"
     }
     
@@ -66,23 +75,14 @@ pipeline {
             steps {
                 
                 dir("${params.R_VERSION}"){
-                    
-                    sh '''
-                    set +x
-                    echo "{\\"auths\\": {\\"https://index.docker.io/v1/\\": {\\"auth\\": \\"\$(echo -n $DOCKER_HUB_CREDS | base64)\\"}}}" > /kaniko/.docker/config.json
-                    set -x
-                    '''
                     sh """
                     /kaniko/executor \
                         -v info \
                         --context ${env.WORKSPACE}/${params.R_VERSION} \
                         --cache=${params.NOCACHE ? 'false' : 'true'} \
                         --cleanup \
-                        --destination=${env.NS}/r-ver:${params.R_VERSION} \
                         --destination=${env.REG_OA_PRIVATE}/${env.NS}/r-ver:${params.R_VERSION} \
-                        --destination=${env.NS}/r-ver:${params.R_VERSION}-${env.TS} \
                         --destination=${env.REG_OA_PRIVATE}/${env.NS}/r-ver:${params.R_VERSION}-${env.TS} \
-                        ${params.LATEST ? "--destination=${env.NS}/r-ver:latest" : ""} \
                         ${params.LATEST ? "--destination=${env.REG_OA_PRIVATE}/${env.NS}/r-ver:latest" : ""}
                     """
                 }
