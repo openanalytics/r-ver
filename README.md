@@ -4,7 +4,7 @@
 ## Add an image for a particular (new) R version
 
 - add a new **choice** in the
-  [Jenkinsfile](https://scm.openanalytics.eu/git/r-ver/src/branch/master/Jenkinsfile#L34) specifying
+  [Jenkinsfile](https://scm.openanalytics.eu/git/r-ver/src/branch/master/Jenkinsfile#L44) specifying
   the version
 - add a **folder** with the new R version e.g. 4.2.2
 - include a lightweight Dockerfile in the newly created folder with
