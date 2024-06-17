@@ -49,4 +49,4 @@ and run
 sudo docker build -t openanalytics/r-ver:3.5.3 .
 ```
 
-(c) Copyright Open Analytics NV, 2019-2023.
+(c) Copyright Open Analytics NV, 2019-2024.
