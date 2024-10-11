@@ -1,0 +1,4 @@
+ARG R_VERSION=latest
+FROM rocker/r-ver:$R_VERSION
+
+ENV R_PAPERSIZE=a4
