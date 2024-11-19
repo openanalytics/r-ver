@@ -4,7 +4,7 @@
 ## Add an image for a particular (new) R version
 
 - add a new **choice** in the
-  [Jenkinsfile](https://scm.openanalytics.eu/git/r-ver/src/branch/master/Jenkinsfile#L44) specifying
+  [Jenkinsfile](https://scm.openanalytics.eu/git/r-ver/src/branch/master/JenkinsfileSCM#L10) specifying
   the version
 
 If using the default Dockerfile, no further changes is needed, otherwise:
@@ -18,13 +18,13 @@ ENV R_PAPERSIZE=a4
 # add more lines that are different from default
 ```
 
-**Note:** the build will *not* be automatically triggered, so you need to manually launch the parametrized build for the version of your choice on [Jenkins](https://ci.openanalytics.eu/job/git/job/r-ver/job/master/)
+**Note:** the build will *not* be automatically triggered, so you need to manually launch the parametrized build for the version of your choice on [Jenkins](https://ci.openanalytics.eu/job/scm-openanalytics/job/r-ver/job/master/)
 
 ## Rebuild an image
 
-Trigger the parametrized build at
+Trigger the parameterized build at
 
-https://ci.openanalytics.eu/job/git/job/r-ver/job/master/
+https://ci.openanalytics.eu/job/scm-openanalytics/job/r-ver/job/master/
 
 ## Pull an image
 
