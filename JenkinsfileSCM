@@ -39,6 +39,7 @@ pipeline {
             
                 /kaniko/executor \
                     -v info \
+                    --log-timestamp=true \
                     --context \${CONTEXT_PATH} \
                     --dockerfile \${CONTEXT_PATH}/Dockerfile \
                     --build-arg R_VERSION=${params.R_VERSION} \
